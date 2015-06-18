@@ -250,10 +250,12 @@ void Warn( NSString *msg, ... )
 #else
     _Logv(kWarningPrefix,msg,args);
 #endif
-    if (gMYWarnRaisesException)
-        [NSException raise: NSInternalInconsistencyException
-                    format: [@"Warn() was called: " stringByAppendingString: msg]
-                 arguments: args];
+    
+    /** DRU 18.06.2015: Adjusted Exception to use in initial replication */
+    if (gMYWarnRaisesException) {
+        [[NSException exceptionWithName:@"InitialReplicationFault" reason:@"Problems during initial replication! See the warning above. Please check connectivity, credentials and permissions. Do they work out via web?" userInfo:nil] raise];
+    }
+
     va_end(args);
 }
 
