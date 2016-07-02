@@ -15,7 +15,7 @@
 #include <termios.h>
 
 
-BOOL gMYWarnRaisesException;
+//BOOL gMYWarnRaisesException;
 
 
 NSString* LOC( NSString *key )     // Localized string lookup
@@ -253,13 +253,19 @@ void Warn( NSString *msg, ... )
     _Logv(kWarningPrefix,msg,args);
 #endif
     va_end(args);
-
+    
+    
+    /** DRU 18.06.2015: Adjusted Exception to use in initial replication
     if (gMYWarnRaisesException) {
         va_list args;
         va_start(args,msg);
         [NSException raise: NSInternalInconsistencyException
                     format: [@"Warn() was called: " stringByAppendingString: msg]
                  arguments: args];
+        va_end(args);
+    } */
+    if (gMYWarnRaisesException) {
+        [[NSException exceptionWithName:@"InitialReplicationFault" reason:@"Problems during initial replication! See the warning above. Please check connectivity, credentials and permissions. Do they work out via web?" userInfo:nil] raise];
         va_end(args);
     }
 }
